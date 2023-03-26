@@ -1,0 +1,243 @@
+class CardGame {
+    field Array Cards;
+    field Pointer pointer;
+    field Counter counter;
+    field int countOfCard;
+
+    /** Create card array and initialize pointer*/
+    constructor CardGame new(){
+        let Cards = Array.new(18);
+        let pointer = Pointer.new(2050);
+        let countOfCard = 18;
+        let counter = Counter.new(3100);
+        return this;
+    }
+
+    /** Shuffle the cards and draw the playing field*/
+    method void prepair () {
+        var char key;
+        let key = CardGame.getSeed();
+        do shuffleDeck(key);
+        do writeAllCards();
+        do pointer.drawPointer();
+        do Counter.drawLineAndCountZero();
+        return; 
+    }
+
+    /** Main part of the game*/
+    method void start () {
+        var char key;
+        var boolean exit;
+        var int indexOfSelectedCard;
+        
+        let exit = false;
+        let indexOfSelectedCard = -1;
+        let key = 0;
+        do Sys.wait(800);
+        while (~exit) {
+            // waits for a key to be pressed
+            while (key = 0) { let key = Keyboard.keyPressed(); }
+            if (key = 32) // space key
+            { 
+                let indexOfSelectedCard = processRequest(indexOfSelectedCard); 
+                if (indexOfSelectedCard = -2) { 
+                    let countOfCard = countOfCard - 2;
+                    do counter.drawCount(9 - (countOfCard / 2));
+                }
+            }
+            if ((key = 81) | (countOfCard = 0))  { let exit = true; } // q key
+            if (key = 131) { do pointer.moveUp(); }   // up arrow
+            if (key = 133) { do pointer.moveDown(); }   // down arrow
+            if (key = 130) { do pointer.moveLeft(); }   // left arrow
+            if (key = 132) { do pointer.moveRight(); }   // right arrow
+            if (countOfCard = 0) { 
+                do counter.drawWin();
+                do Sys.wait(5000); 
+            }
+
+            while (~(key = 0)) {
+                let key = Keyboard.keyPressed(); // does not allow sticky keys
+            }
+        } 
+
+        return;
+    }
+
+    /** Processes data from a pointer*/
+    method int processRequest (int indexOfSelectedCard) {
+        var int indexOfCurrentCard, result, pictureId;
+        var Card card1, card2;
+        var Picture picture;
+
+        let indexOfCurrentCard = pointer.selectCard(); 
+        if (~(indexOfSelectedCard < 0)) { // draw selected card picture
+            let card1 = Cards[indexOfSelectedCard];
+            do card1.cleanCard();
+            let pictureId = card1.getPictureId();
+            let picture = Picture.new(card1.getMemoryAddress() - 16384);
+            do Memory.deAlloc(picture);
+            do picture.draw(pictureId);
+        }
+        if (~(indexOfCurrentCard < 0)) { // draw current card picture
+            let card2 = Cards[indexOfCurrentCard];
+            do card2.cleanCard();
+            let pictureId = card2.getPictureId();
+            let picture = Picture.new(card2.getMemoryAddress() - 16384);
+            do Memory.deAlloc(picture);
+            do picture.draw(pictureId);
+        }
+        
+        if (~(indexOfSelectedCard < 0)) {
+            if (~(indexOfCurrentCard < 0)) {
+                if (~(card1.getMemoryAddress() = card2.getMemoryAddress())) {
+                    do Sys.wait(800);
+                    if ((card1.getPictureId() = card2.getPictureId())){
+                        do card1.cleanCard();
+                        do card2.cleanCard(); 
+                        let result = -2;         // success
+                        do card1.dispose();
+                        do card2.dispose();
+                    }
+                    else {
+                        do card1.drawShirt(); 
+                        do card2.drawShirt();
+                        let result = -1;  // mistake
+                    }
+                }
+                else {
+                    let result = indexOfSelectedCard; // not different cards
+                }  
+            }
+            else 
+            {
+                let result = indexOfSelectedCard; // current card is empty
+            }
+        }
+        else {
+            if (~(indexOfCurrentCard < 0)) {
+                let result = indexOfCurrentCard; // first card of the pair
+            }
+            else {
+                let result = -1; // 
+            }
+        }
+        return result;
+            
+    }
+
+    /** Initialization of cards after shuffling the deck*/
+    method void initializeCards (Array picturesId) {
+        var int i;
+        var int address;
+
+        let i = 0;
+        let address = 514; // first row
+        while (i < 18) {
+            let Cards[i] = Card.new(address, picturesId[i]);
+            let i = i + 1;
+            let address = address + 4;
+            if (i = 6) {
+                let address = 3074; // second row
+            }
+            if (i = 12) {
+                let address = 5634; // third row
+            }
+        }
+        do Memory.deAlloc(picturesId);
+        return;
+    }
+
+    /** Gets the seed for the pseudo-random number generator*/
+    function char getSeed () {
+        var String greetings;
+        var char key; 
+        
+        do Screen.setColor(true);
+        let greetings = "Press any key to start the game...";
+        do Output.printString(greetings);
+        while (key = 0) {
+            let key = Keyboard.keyPressed();        
+        }
+        do Screen.clearScreen();
+        do Memory.deAlloc(greetings);
+        return key;
+    }
+
+    /** Draws all the cards on the field*/
+    method void writeAllCards () {
+        var int i;
+        var Card card;
+
+        let i = 0;
+        while (i < 18) {
+            let card = Cards[i];
+            do card.drawShirt();
+            let i = i + 1;
+        }
+        do Memory.deAlloc(card);
+        return;
+    }
+
+    /** Shuffling the deck with a number generator*/
+    method void shuffleDeck (int seed) {
+        var int i,j,z;
+        var Tuple temp;
+        var Array tupleArray; // array of pairs of numbers of the form: random number, picture number for the card
+        var Array numbers; //  array of random numbers
+
+        let numbers = CardGame.getRandomNumbers(seed);
+        let tupleArray = Array.new(18);
+        let i = 0;
+        while ( i < 18 ) {
+            let tupleArray[i] = Tuple.new(numbers[i], MathExtension.mod(i,9));
+            let i = i + 1;
+        }  
+        do ArrayExtension.bubbleSort(numbers, 18); 
+        let i = 0;
+        while ( i < 18 ) { // sort array of tuples by first element
+            let j = 0; 
+            while (j < 18) {
+                let temp = tupleArray[i];
+                let z = temp.getItem1();
+                if (z = numbers[j]) {
+                    let numbers[j] = temp.getItem2();
+                    let j = 18; // break
+                } 
+                let j = j + 1;
+            }
+            let i = i + 1;
+        }
+
+        do Memory.deAlloc(temp);
+        do Memory.deAlloc(tupleArray);
+        do initializeCards(numbers);
+        return;
+    }
+
+    /* Generate sequence of random numbers */
+    function Array getRandomNumbers (int seed) {
+        var Random random;
+        var int i,z;
+        var Array numbers; 
+
+        let i = 0;
+        let random = Random.new(seed);
+        let numbers = Array.new(18);
+        while ( i < 18 ) {
+            let numbers[i] = random.next();
+            let i = i + 1;
+        }
+        do Memory.deAlloc(random);
+        return numbers;
+    }
+    
+    /** Dispose this game. */
+    method void dispose () {
+        do pointer.dispose();
+        do Memory.deAlloc(Cards);
+        do counter.dispose();
+        do Memory.deAlloc(this);
+        do Screen.clearScreen();
+        return; 
+    }
+}

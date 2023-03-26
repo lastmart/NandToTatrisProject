@@ -1,0 +1,23 @@
+/** Standard class Tuple*/
+class Tuple {
+    field int item1, item2;
+
+    constructor Tuple new (int a, int b) {
+        let item1 = a;
+        let item2 = b;
+        return this;
+    }
+
+    method int getItem1 () {
+        return item1;
+    }
+
+    method int getItem2 () {
+        return item2;
+    }
+
+    method void dispose () {
+        do Memory.deAlloc(this);
+        return;
+    }
+}

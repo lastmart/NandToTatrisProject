@@ -1,0 +1,177 @@
+class Card {
+    field int memAddress;
+	field int pictureId;
+
+    constructor Card new(int gettedMemAddress, int picture) {
+        let memAddress = 16384 +  gettedMemAddress;
+		let pictureId = picture;
+        return this;
+    }
+
+	method int getPictureId () {
+		return pictureId;
+	}
+
+	method int getMemoryAddress () {
+		return memAddress;
+	}
+
+	/** Dispose this card. */
+	method void dispose () {
+		do Memory.deAlloc(this);
+		return;
+	}
+
+	/** Clean this card from screen. */
+    method void cleanCard () {
+        var Array positions;
+        var int i;
+        var int address;
+
+        let positions = Array.new(2);
+		let positions[0] = 1;
+		let positions[1] = 511;
+        let i = 1;
+        let address = memAddress;
+        do Screen.setColor(false);
+        while (i < 7) {
+            do Memory.poke(address+0, 0);
+            do Memory.poke(address+32, 0);
+            do Memory.poke(address+64, 0);
+            do Memory.poke(address+96, 0);
+            do Memory.poke(address+128, 0);
+            do Memory.poke(address+160, 0);
+            do Memory.poke(address+192, 0);
+            do Memory.poke(address+224, 0);
+            do Memory.poke(address+256, 0);
+            do Memory.poke(address+288, 0);
+            do Memory.poke(address+320, 0);
+            do Memory.poke(address+352, 0);
+            do Memory.poke(address+384, 0);
+            do Memory.poke(address+416, 0);
+            do Memory.poke(address+448, 0);
+            do Memory.poke(address+480, 0);
+            let i = i + 1;
+            let address = address + positions[MathExtension.mod(i, 2)];
+        }
+        
+        do positions.dispose();
+        return;
+    }
+
+	/** Draw the card back piece by piece*/
+    method void drawShirt () {
+        var int address;
+
+        let address = memAddress;        
+        do Screen.setColor(true);
+        do Memory.poke(address+0, -1);       //1
+	    do Memory.poke(address+32, -1);
+	    do Memory.poke(address+64, -1);
+	    do Memory.poke(address+96, -1);
+	    do Memory.poke(address+128, -3855);
+	    do Memory.poke(address+160, -3855);
+	    do Memory.poke(address+192, -3855);
+	    do Memory.poke(address+224, -3855);
+	    do Memory.poke(address+256, 241);
+	    do Memory.poke(address+288, 241);
+	    do Memory.poke(address+320, 241);
+	    do Memory.poke(address+352, 241);
+	    do Memory.poke(address+384, 3841);
+	    do Memory.poke(address+416, 3841);
+	    do Memory.poke(address+448, 3841);
+	    do Memory.poke(address+480, 3841);
+
+        let address = address + 1;        //2
+        do Memory.poke(address+0, -1);
+	    do Memory.poke(address+32, -1);
+	    do Memory.poke(address+64, -1);
+	    do Memory.poke(address+96, -1);
+	    do Memory.poke(address+128, -28913);
+	    do Memory.poke(address+160, -28913);
+	    do Memory.poke(address+192, -28913);
+	    do Memory.poke(address+224, -28913);
+	    do Memory.poke(address+256, -28928);
+	    do Memory.poke(address+288, -28928);
+	    do Memory.poke(address+320, -28928);
+	    do Memory.poke(address+352, -28928);
+	    do Memory.poke(address+384, -32528);
+	    do Memory.poke(address+416, -32528);
+	    do Memory.poke(address+448, -32528);
+	    do Memory.poke(address+480, -32528);
+
+        let address = address + 511;      //3
+        do Memory.poke(address+0, 3841);
+	    do Memory.poke(address+32, 3841);
+	    do Memory.poke(address+64, 3841);
+	    do Memory.poke(address+96, 3841);
+	    do Memory.poke(address+128, -4095);
+	    do Memory.poke(address+160, -4095);
+	    do Memory.poke(address+192, -4095);
+	    do Memory.poke(address+224, -4095);
+	    do Memory.poke(address+256, -4095);
+	    do Memory.poke(address+288, -4095);
+	    do Memory.poke(address+320, -4095);
+	    do Memory.poke(address+352, -4095);
+	    do Memory.poke(address+384, 3841);
+	    do Memory.poke(address+416, 3841);
+	    do Memory.poke(address+448, 3841);
+	    do Memory.poke(address+480, 3841);
+
+        let address = address + 1;        //4
+        do Memory.poke(address+0, -32528);
+	    do Memory.poke(address+32, -32528);
+	    do Memory.poke(address+64, -32528);
+	    do Memory.poke(address+96, -32528);
+	    do Memory.poke(address+128, -32753);
+	    do Memory.poke(address+160, -32753);
+	    do Memory.poke(address+192, -32753);
+	    do Memory.poke(address+224, -32753);
+	    do Memory.poke(address+256, -32753);
+	    do Memory.poke(address+288, -32753);
+	    do Memory.poke(address+320, -32753);
+	    do Memory.poke(address+352, -32753);
+	    do Memory.poke(address+384, -32528);
+	    do Memory.poke(address+416, -32528);
+	    do Memory.poke(address+448, -32528);
+	    do Memory.poke(address+480, -32528);
+
+        let address = address + 511;       //5
+        do Memory.poke(address+0, 3841);
+	    do Memory.poke(address+32, 3841);
+	    do Memory.poke(address+64, 3841);
+	    do Memory.poke(address+96, 3841);
+	    do Memory.poke(address+128, 241);
+	    do Memory.poke(address+160, 241);
+	    do Memory.poke(address+192, 241);
+	    do Memory.poke(address+224, 241);
+	    do Memory.poke(address+256, -3855);
+	    do Memory.poke(address+288, -3855);
+	    do Memory.poke(address+320, -3855);
+	    do Memory.poke(address+352, -3855);
+	    do Memory.poke(address+384, -1);
+	    do Memory.poke(address+416, -1);
+	    do Memory.poke(address+448, -1);
+	    do Memory.poke(address+480, -1);
+
+        let address = address + 1;        //6
+        do Memory.poke(address+0, -32528);
+	    do Memory.poke(address+32, -32528);
+	    do Memory.poke(address+64, -32528);
+	    do Memory.poke(address+96, -32528);
+	    do Memory.poke(address+128, -28928);
+	    do Memory.poke(address+160, -28928);
+	    do Memory.poke(address+192, -28928);
+	    do Memory.poke(address+224, -28928);
+	    do Memory.poke(address+256, -28913);
+	    do Memory.poke(address+288, -28913);
+	    do Memory.poke(address+320, -28913);
+	    do Memory.poke(address+352, -28913);
+	    do Memory.poke(address+384, -1);
+	    do Memory.poke(address+416, -1);
+	    do Memory.poke(address+448, -1);
+	    do Memory.poke(address+480, -1);
+        
+        return;
+    }
+}

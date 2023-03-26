@@ -1,0 +1,29 @@
+class Random {
+    
+    field int currentNumber; // inital number of generator
+    field int multiplier, addend, mask;  // some integer numbers
+    
+    /** Construct random generator. */
+    constructor Random new (int seed) {
+        let currentNumber = seed;
+        let multiplier = 7;
+        let addend = 13;
+        let mask = 143;
+        return this;
+    }
+
+    /** Get next random number*/
+    method int next (){
+        var int nextNumber;
+        /** We add 10 to the final number to avoid matching random numbers with picture ids when shuffling the deck*/
+        let nextNumber = Math.multiply(multiplier, currentNumber) + addend;
+        let nextNumber = MathExtension.mod(nextNumber, mask) + 10; 
+        let currentNumber = nextNumber;
+        return nextNumber;
+    }
+
+    method void dispose () {
+        do Memory.deAlloc(this);
+        return;
+    }
+}

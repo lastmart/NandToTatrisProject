@@ -1,0 +1,11 @@
+class MathExtension {
+    /** Gives the remainder after dividing the dividend by the divisor*/
+    function int mod (int divident, int divider) {
+        var int wholePart, remainder;
+
+        let wholePart = Math.divide(divident,divider);
+        let wholePart = Math.multiply(wholePart, divider);
+        let remainder = divident - wholePart;
+        return remainder;
+    }
+}

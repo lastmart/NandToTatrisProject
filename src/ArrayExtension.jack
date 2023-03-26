@@ -1,0 +1,22 @@
+class ArrayExtension {
+    /** Sorts the passed array into the given array length field*/
+    function void bubbleSort (Array array, int length) {
+        var int i, j, a, b;
+        let i = 0;
+        while (i < length) {
+            let j = 0; 
+            while (j < (length - 1)) {
+                let a = array[j];
+                let b = array[j+1];
+                if ( a > b) {
+                    let array[j] = array[j+1];
+                    let array[j+1] = a;
+                }
+                let j = j + 1; 
+            }
+            let i = i + 1;
+        } 
+        
+        return;
+    }
+}

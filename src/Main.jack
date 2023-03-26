@@ -1,0 +1,11 @@
+/** Program entry point*/
+class Main {	
+	function void main() {
+		var CardGame game;
+		let game = CardGame.new();
+		do game.prepair();
+		do game.start();
+		do game.dispose();
+		return;
+   }	
+}	

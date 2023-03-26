@@ -1,0 +1,14 @@
+function Main.main 1
+call CardGame.new 0
+pop local 0
+push local 0
+call CardGame.prepair 1
+pop temp 0
+push local 0
+call CardGame.start 1
+pop temp 0
+push local 0
+call CardGame.dispose 1
+pop temp 0
+push constant 0
+return

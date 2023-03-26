@@ -1,0 +1,187 @@
+class Pointer {
+    field int memAddress;
+	
+    constructor Pointer new(int gettedMemAddress) {
+        let memAddress = 16384 +  gettedMemAddress;
+        return this;
+    }
+	
+	/** Draws a pointer in the specified area at the specified screen memory address in the constructor*/
+    method void drawPointer(){
+		do Screen.setColor(true);
+		do Memory.poke(memAddress+0, 0);
+		do Memory.poke(memAddress+32, 0);
+		do Memory.poke(memAddress+64, -16384);
+		do Memory.poke(memAddress+96, 24576);
+		do Memory.poke(memAddress+128, 12288);
+		do Memory.poke(memAddress+160, 6144);
+		do Memory.poke(memAddress+192, 3072);
+		do Memory.poke(memAddress+224, 1536);
+		do Memory.poke(memAddress+256, 768);
+		do Memory.poke(memAddress+288, -256);
+		do Memory.poke(memAddress+320, 0);
+		do Memory.poke(memAddress+352, 0);
+		do Memory.poke(memAddress+384, 0);
+		do Memory.poke(memAddress+416, 0);
+		do Memory.poke(memAddress+448, 0);
+		do Memory.poke(memAddress+480, 0);
+
+		let memAddress = memAddress + 1;
+		do Memory.poke(memAddress+0, 0);
+		do Memory.poke(memAddress+32, 0);
+		do Memory.poke(memAddress+64, 3);
+		do Memory.poke(memAddress+96, 6);
+		do Memory.poke(memAddress+128, 12);
+		do Memory.poke(memAddress+160, 24);
+		do Memory.poke(memAddress+192, 48);
+		do Memory.poke(memAddress+224, 96);
+		do Memory.poke(memAddress+256, 192);
+		do Memory.poke(memAddress+288, 127);
+		do Memory.poke(memAddress+320, 0);
+		do Memory.poke(memAddress+352, 0);
+		do Memory.poke(memAddress+384, 0);
+		do Memory.poke(memAddress+416, 0);
+		do Memory.poke(memAddress+448, 0);
+		do Memory.poke(memAddress+480, 0);
+
+		return;
+	}
+
+	method void dispose(){
+		do Memory.deAlloc(this);
+		return;
+	}
+
+	/** Erases the drawn pointer*/
+	method void cleanPointer(){
+		do Screen.setColor(false);
+		do Memory.poke(memAddress+0, 0);
+		do Memory.poke(memAddress+32, 0);
+		do Memory.poke(memAddress+64, 0);
+		do Memory.poke(memAddress+96, 0);
+		do Memory.poke(memAddress+128, 0);
+		do Memory.poke(memAddress+160, 0);
+		do Memory.poke(memAddress+192, 0);
+		do Memory.poke(memAddress+224, 0);
+		do Memory.poke(memAddress+256, 0);
+		do Memory.poke(memAddress+288, 0);
+		do Memory.poke(memAddress+320, 0);
+		do Memory.poke(memAddress+352, 0);
+		do Memory.poke(memAddress+384, 0);
+		do Memory.poke(memAddress+416, 0);
+		do Memory.poke(memAddress+448, 0);
+		do Memory.poke(memAddress+480, 0);
+
+		let memAddress = memAddress - 1;
+		do Memory.poke(memAddress+0, 0);
+		do Memory.poke(memAddress+32, 0);
+		do Memory.poke(memAddress+64, 0);
+		do Memory.poke(memAddress+96, 0);
+		do Memory.poke(memAddress+128, 0);
+		do Memory.poke(memAddress+160, 0);
+		do Memory.poke(memAddress+192, 0);
+		do Memory.poke(memAddress+224, 0);
+		do Memory.poke(memAddress+256, 0);
+		do Memory.poke(memAddress+288, 0);
+		do Memory.poke(memAddress+320, 0);
+		do Memory.poke(memAddress+352, 0);
+		do Memory.poke(memAddress+384, 0);
+		do Memory.poke(memAddress+416, 0);
+		do Memory.poke(memAddress+448, 0);
+		do Memory.poke(memAddress+480, 0);
+		return;
+	}
+	
+	/* Return index of selected card in array*/
+	method int selectCard() { 
+		var int cardCordinat, value, cardIndex;
+
+		let cardCordinat = memAddress - 1536;
+		let value = Memory.peek(cardCordinat);
+		let cardCordinat = cardCordinat - 16384;
+		if (~(value = 0)){
+			if (cardCordinat < 540) { let cardIndex = (cardCordinat - 514) / 4; }
+			if ((cardCordinat > 540) & (cardCordinat < 4000)) { let cardIndex = (cardCordinat - 3074) / 4 + 6; }
+			if (cardCordinat > 4000) { let cardIndex = (cardCordinat - 5634) / 4 + 12; }
+		} 
+		else {
+			let cardIndex = -1;
+		}
+		return cardIndex;
+	}
+
+	/** 
+	Check the pointer's address so that it does not accidentally go beyond 
+	the boundaries of the playing area, "transfers" the drawn pointer to the right
+	to the next card.
+	*/
+	method void moveRight(){
+		if(~(memAddress = (16384 + 7191))){
+			do cleanPointer();
+			if ((memAddress = ((16384 + 2070))) | (memAddress = (16384 + 4630))){
+				let memAddress = memAddress + 2540;
+				do drawPointer();
+			} 
+			else {
+				let memAddress = memAddress + 4;
+				do drawPointer();
+			}
+		}
+		return;
+	}
+
+	/** 
+	Check the pointer's address so that it does not accidentally go beyond 
+	the boundaries of the playing area, "transfers" the drawn pointer to the left
+	to the next card.
+	*/
+	method void moveLeft(){
+		if(~(memAddress = (16384 + 2051))){
+			do cleanPointer();
+			if ((memAddress = ((16384 + 4610))) | (memAddress = (16384 + 7170))) {
+				let memAddress = memAddress - 2540;
+				do drawPointer();
+			} 
+			else {
+				let memAddress = memAddress - 4;
+				do drawPointer();
+			}
+		}
+		return;
+	}
+
+	/** 
+	Check the pointer's address so that it does not accidentally go beyond 
+	the boundaries of the playing area, "transfers" the drawn pointer to the up
+	to the next card.
+	*/
+	method void moveUp(){
+		if (~((memAddress = (16384 + 2051)) | (memAddress = (16384 + 2055)) 
+			| (memAddress = (16384 + 2059)) | (memAddress = (16384 + 2063)) 
+			| (memAddress = (16384 + 2067)) | (memAddress = (16384 + 2071))))
+		{
+			do cleanPointer();
+			let memAddress = memAddress - 2560;
+			do drawPointer();
+		}
+		return;
+	}
+
+	/** 
+	Check the pointer's address so that it does not accidentally go beyond 
+	the boundaries of the playing area, "transfers" the drawn pointer to the down
+	to the next card.
+	*/
+	method void moveDown(){
+		if (~((memAddress = (16384 + 7171)) | (memAddress = (16384 + 7175)) 
+			| (memAddress = (16384 + 7179)) | (memAddress = (16384 + 7183)) 
+			| (memAddress = (16384 + 7187)) | (memAddress = (16384 + 7191))))
+		{
+			do cleanPointer();
+			let memAddress = memAddress + 2560;
+			do drawPointer();
+		}
+		return;
+	}
+}
+
