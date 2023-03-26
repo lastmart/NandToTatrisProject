@@ -23,5 +23,5 @@
 3. Мы пытались превратить Jack в C# и мы этого не скрываем! P.s. После работы на Jack начинаешь безмерно любить и дорожить C#))) 
 
 ### Авторы:
-- **[Мартынов Егор](https://github.com/BigMommaPr)**
 - **[Грехов Егор](https://github.com/MidnightOwwl)**
+- **[Мартынов Егор](https://github.com/BigMommaPr)**
